@@ -1,0 +1,53 @@
+name: run-tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.3, 8.4]
+        laravel: [12, 13]
+        stability: [prefer-lowest, prefer-stable]
+
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} (${{ matrix.stability }})
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: /tmp/composer-cache
+          key: "php-${{ matrix.php }}-laravel-${{ matrix.laravel }}-${{ matrix.stability }}-${{ hashFiles('composer.json') }}"
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, pdo, sqlite
+          coverage: none
+
+      - name: Install dependencies
+        run: |
+          composer config cache-dir /tmp/composer-cache
+          composer require "laravel/framework:${{ matrix.laravel }}.*" --no-interaction --no-update --no-scripts
+          composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-scripts
+
+      - name: Check coding style
+        run: vendor/bin/pint --test
+
+      - name: Static analysis
+        run:           vendor/bin/phpstan analyse --level 6 src
+
+      - name: Execute tests
+        run: vendor/bin/pest

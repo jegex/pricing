@@ -1,0 +1,56 @@
+{
+    "name": "jegex/pricing",
+    "description": "Jegex pricing engine - standalone micro package.",
+    "keywords": ["jegex", "pricing", "ecommerce", "laravel"],
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Jegex\\Pricing\\": "src"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jegex\\Pricing\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Jegex\\Pricing\\PricingServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^8.3",
+        "ext-intl": "*",
+        "laravel/framework": "^12.0|^13.0"
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "lint": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse",
+        "quality": [
+            "@lint",
+            "@analyse",
+            "@test"
+        ]
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "orchestra/testbench": "^9.0|^10.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "phpstan/phpstan": "^2.0",
+        "larastan/larastan": "^3.9"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
